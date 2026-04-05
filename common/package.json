@@ -1,6 +1,6 @@
 {
-  "name": "ayushdevinfermedium1-common",
-  "version": "1.0.3",
+  "name": "@ayushdevinfer1/medium-common",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {

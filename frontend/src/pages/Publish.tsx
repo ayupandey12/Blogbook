@@ -3,7 +3,7 @@ import type { Blogposttype } from "@ayushdevinfer1/medium-common"
 import { useNavigate } from "react-router-dom"
 import { Appbar } from "../components/Appbar"
 import axios from "axios"
-import { baseurl } from "../../config"
+import { baseurl,cloudName,uploadPreset } from "../../config"
 import { Auth } from "../context/context"
 import { Skeleton } from "../components/Skeleton"
 
@@ -27,8 +27,8 @@ export const Publish = () => {
         // @ts-ignore (if you don't have types for cloudinary window object)
         const widget = window.cloudinary.createUploadWidget(
             {
-                cloudName: "du9ni5lv6", // Replace with your Cloudinary Cloud Name
-                uploadPreset: "myblogimage",  // Replace with your Upload Preset
+                cloudName: cloudName, // Replace with your Cloudinary Cloud Name
+                uploadPreset: uploadPreset,  // Replace with your Upload Preset
                 sources: ["local", "url", "camera"],
                 multiple: false,
             },

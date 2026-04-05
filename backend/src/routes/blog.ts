@@ -64,6 +64,7 @@ Blogrouter.post('/', async (c) => {
       data: {
         title: body.title,
         content: body.content,
+        image:body.image,
         authorId: userId
       }
     });
@@ -107,7 +108,8 @@ Blogrouter.put('/:id', async (c) => {
       where: { id },
       data: {
         title: body.title ?? existing.title,
-        content: body.content ?? existing.content
+        content: body.content ?? existing.content,
+        image:body.image?? existing.image
       }
     });
 
@@ -129,6 +131,7 @@ Blogrouter.get('/bulk', async (c) => {
       select:{
         title:true,
         content:true,
+        image:true,
         id:true,
         author:{
           select:{
@@ -157,6 +160,7 @@ Blogrouter.get('/:id', async (c) => {
       select:{
         title:true,
         content:true,
+        image:true,
         id:true,
         author:{
           select:{

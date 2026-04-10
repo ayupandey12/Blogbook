@@ -75,11 +75,11 @@ export const Blog = () => {
                 </section>
 
                 <section className="relative mt-10 overflow-hidden border border-[#d7cab2] bg-[#f3ece0]/85 p-8 shadow-[0_12px_30px_rgba(0,0,0,0.06)] sm:p-10">
-                    <img
+                    {/* <img
                         src={blog.image}
                         alt={blog.title}
                         className="pointer-events-none absolute -bottom-10 -left-16 hidden h-[85%] w-auto opacity-10 sm:block"
-                    />
+                    /> */}
                     <article className="relative font-['Cormorant_Garamond'] text-[22px] leading-8 text-[#2d261f]">
                         <div className="whitespace-pre-line first-letter:float-left first-letter:mr-2 first-letter:font-['Cinzel'] first-letter:text-6xl first-letter:font-semibold">
                             {blog.content}

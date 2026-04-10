@@ -1,10 +1,10 @@
 import { Appbar } from "../components/Appbar";
 import { Blogcard } from "../components/Blogcards";
 import { Spinner } from "../components/Spinner";
-import { useblogs } from "../hooks/useblog";
+import { useBlogs } from "../hooks/useblog";
 
 export const Blogs = () => {
-    const { loading, blogs } = useblogs()
+    const { loading, blogs } = useBlogs()
 
     const formatDate = (dateString?: string) => {
         if (!dateString) return new Date().toLocaleDateString();

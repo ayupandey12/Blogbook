@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import { Appbar } from "../components/Appbar";
 import { Spinner } from "../components/Spinner";
-import { useblog } from "../hooks/useblog";
+import { useBlog } from "../hooks/useblog";
+import { blogdata } from "../context/atom";
 import axios from "axios";
 import { baseurl } from "../../config";
 
 export const Blog = () => {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
-    const { loading, blog } = useblog({ id: id ?? "" })
+    const { loading, blog } = useBlog({ id: id ?? "" })
     const [isDeleting, setIsDeleting] = useState(false)
+    const setBlogMap = useSetRecoilState(blogdata)
 
     useEffect(() => {
         if (!id) {
@@ -69,6 +72,11 @@ export const Blog = () => {
             const token = localStorage.getItem("token")
             await axios.delete(`${baseurl}/api/v1/blog/${blog.id}`, {
                 headers: token ? { Authorization: token } : undefined
+            })
+            setBlogMap((prev) => {
+                const next = { ...prev }
+                delete next[blog.id]
+                return next
             })
             navigate("/blogs")
         } catch (error: unknown) {

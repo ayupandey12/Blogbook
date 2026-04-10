@@ -1,7 +1,9 @@
-import axios from "axios";
+import axios from "axios"
 import { useEffect, useState } from "react"
-import { baseurl } from "../../config";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
+import { useRecoilState, useSetRecoilState } from "recoil"
+import { baseurl } from "../../config"
+import { blogdata } from "../context/atom"
 
 export interface Blog {
     title: string
@@ -16,48 +18,77 @@ export interface Blog {
     published?: boolean
 }
 
-export const useblog = ({ id }: { id: string }) => {
-    const navigate = useNavigate();
-    const [loading, setloading] = useState(true);
-    const [blog, setblog] = useState<Blog>();
+export const useBlog = ({ id }: { id: string }) => {
+    const navigate = useNavigate()
+    const [blogMap, setBlogMap] = useRecoilState(blogdata)
+    const entry = id ? blogMap[id] : undefined
+    const [loading, setLoading] = useState(() => !!(id && !blogMap[id]))
 
     useEffect(() => {
-        if (!id) return;
-        
-        const token = localStorage.getItem("token");
-        const headers = token ? { Authorization: token } : {};
+        if (!id) {
+            setLoading(false)
+            return
+        }
+        if (entry) {
+            setLoading(false)
+            return
+        }
 
-        axios.get(`${baseurl}/api/v1/blog/${id}`, {
-            headers: headers
-        }).then((response) => {
-            setblog(response.data);
-            setloading(false);
-        }).catch(() => {
-            alert(`blog is currently unavailable`)
-            navigate('/blogs');
-        })
-    }, [id, navigate]);
+        setLoading(true)
+        let cancelled = false
 
-    return { loading, blog };
+        const token = localStorage.getItem("token")
+        const headers = token ? { Authorization: token } : {}
+
+        axios
+            .get(`${baseurl}/api/v1/blog/${id}`, { headers })
+            .then((response) => {
+                if (cancelled) return
+                setBlogMap((prev) => ({ ...prev, [id]: response.data }))
+                setLoading(false)
+            })
+            .catch(() => {
+                if (cancelled) return
+                alert(`blog is currently unavailable`)
+                navigate("/blogs")
+                setLoading(false)
+            })
+
+        return () => {
+            cancelled = true
+        }
+    }, [id, entry, navigate, setBlogMap])
+
+    return { loading, blog: entry }
 }
 
-export const useblogs = () => {
-    const [loading, setloading] = useState(true);
-    const [blogs, setblogs] = useState<Blog[]>([]);
+export const useBlogs = () => {
+    const [loading, setloading] = useState(true)
+    const [blogs, setblogs] = useState<Blog[]>([])
+    const setBlogMap = useSetRecoilState(blogdata)
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const headers = token ? { Authorization: token } : {};
+        const token = localStorage.getItem("token")
+        const headers = token ? { Authorization: token } : {}
 
-        axios.get(`${baseurl}/api/v1/blog/bulk`, {
-            headers: headers
-        }).then((response) => {
-            setblogs(response.data);
-            setloading(false);
-        }).catch((res) => {
-            setloading(false);
-        })
-    }, []);
+        axios
+            .get(`${baseurl}/api/v1/blog/bulk`, { headers })
+            .then((response) => {
+                const list = response.data as Blog[]
+                setblogs(list)
+                setBlogMap((prev) => {
+                    const next = { ...prev }
+                    for (const b of list) {
+                        next[b.id] = b
+                    }
+                    return next
+                })
+                setloading(false)
+            })
+            .catch(() => {
+                setloading(false)
+            })
+    }, [setBlogMap])
 
-    return { loading, blogs };
+    return { loading, blogs }
 }
